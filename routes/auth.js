@@ -14,7 +14,7 @@ router.get("/test", (req, res) =>{
 router.post("/register", async (req, res) =>{
     try{
         //hash password
-        const hasedPassword = await bcrypt.hash(req.body.password, 12);
+        const hashedPassword = await bcrypt.hash(req.body.password, 12);
         const newUser = new User({
             email: req.body.email,
             password: hashedPassword,
@@ -22,9 +22,10 @@ router.post("/register", async (req, res) =>{
         })
         //save user to data base
         const savedUser = await newUser.save();
+        return res.json(savedUser);
     } catch(err){
         console.log(err);
         res.status(500).send(err.message)
     }
-})
+});
 module.exports= router;
