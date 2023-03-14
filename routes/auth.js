@@ -1,5 +1,4 @@
 const express = require('express');
-const { base } = require('../models/User');
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
@@ -25,7 +24,7 @@ router.post("/register", async (req, res) =>{
         const savedUser = await newUser.save();
     } catch(err){
         console.log(err);
-        res.status(500).send(err.message);
+        res.status(500).send(err.message)
     }
 })
 module.exports= router;
