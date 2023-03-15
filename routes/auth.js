@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const { hash } = require('bcrypt');
+const ValidateRegisterInput = require("../validation/registerValidation")
 
 router.get("/test", (req, res) =>{
     res.send("Auth route working");
@@ -13,6 +14,18 @@ router.get("/test", (req, res) =>{
 
 router.post("/register", async (req, res) =>{
     try{
+        const {errors, isValid} = ValidateRegisterInput(req.body);
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+        // check for existing user
+        const existingEmail = await User.findOne({
+            email: new RegExp("^" + req.body.email +"$", "i")
+        });
+
+        if (existingEmail) {
+            return res.status(400).json({error: 'This email exist'})
+        }
         //hash password
         const hashedPassword = await bcrypt.hash(req.body.password, 12);
         const newUser = new User({
