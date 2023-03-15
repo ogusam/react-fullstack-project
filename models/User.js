@@ -12,10 +12,9 @@ const UserSchema = new Schema(
         },
         name: {
             type: String,
-            minlength: 6,
+            minlength: 2,
             required: true,
-            unique: true,
-        },
+            },
         
     },
     {

@@ -14,6 +14,14 @@ router.get("/test", (req, res) =>{
 
 router.post("/register", async (req, res) =>{
     try{
+        const{password} = req.body
+        if (password.length < 4){
+            return res.status(400).json({message: "Password less than 6"})
+        };
+        const{name} =req.body
+        if (name.lenght < 2){
+        return res.status(400).json({message: "Invalid name"})
+    };
         const {errors, isValid} = ValidateRegisterInput(req.body);
         if (!isValid) {
             return res.status(400).json(errors);
