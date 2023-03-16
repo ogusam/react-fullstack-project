@@ -15,13 +15,10 @@ router.get("/test", (req, res) =>{
 router.post("/register", async (req, res) =>{
     try{
         const{password} = req.body
-        if (password.length < 4){
+        if (password.length < 6){
             return res.status(400).json({message: "Password less than 6"})
         };
-        const{name} =req.body
-        if (name.lenght < 2){
-        return res.status(400).json({message: "Invalid name"})
-    };
+        
         const {errors, isValid} = ValidateRegisterInput(req.body);
         if (!isValid) {
             return res.status(400).json(errors);
@@ -49,4 +46,37 @@ router.post("/register", async (req, res) =>{
         res.status(500).send(err.message)
     }
 });
+//@route post/api/aut/loggin
+//desc loggin user and return access token
+
+router.post("/login", async (req, res) =>{
+    try{
+        //check for user
+        const user = await User.findOne({
+            email: new RegExp("^" + req.body.email +"$", "i"),
+        });
+
+        if(!user) {
+            return res.status(400).json
+            ({error: "There was a problem with credential"});
+            
+        }
+        const passwordMatch = await bcrypt.compare(
+            req.body.password,
+            user.password
+        );
+            return res.json({passwordMatch: passwordMatch});
+        if (!passwordMatch){
+            return res
+            .status(400)
+            .json({error: "There is a problem"});
+        }
+    } catch(err) {
+        console.log(err);
+        return res.status(500).send(err.message);
+    }
+})
+    
+       
+
 module.exports= router;
