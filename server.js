@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const authRoute = require("./routes/auth");
+const cookieparser =require("cookie-parser");
 
 const uri="mongodb+srv://ogusam:Password12345@cluster0.p4hxmas.mongodb.net/?retryWrites=true&w=majority"
 
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(cookieparser());
 
 app.get("/", (req, res) =>{
     res.send("Fullstack React Project");
