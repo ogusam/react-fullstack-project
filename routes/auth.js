@@ -3,7 +3,8 @@ const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const { hash } = require('bcrypt');
-const ValidateRegisterInput = require("../validation/registerValidation")
+const ValidateRegisterInput = require("../validation/registerValidation");
+const jwt = require('jsonwebtoken');
 
 router.get("/test", (req, res) =>{
     res.send("Auth route working");
@@ -65,12 +66,31 @@ router.post("/login", async (req, res) =>{
             req.body.password,
             user.password
         );
-            return res.json({passwordMatch: passwordMatch});
+            
         if (!passwordMatch){
             return res
             .status(400)
             .json({error: "There is a problem"});
         }
+        const payload = {userId: user._id};
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: "7d"
+        });
+
+        res.cookie("access-token", token, {
+            expires: new Date(Date.now() +7+24+60+60+1000),
+            httpOnly:true,
+            secure:process.env.NODE_ENV === "production"
+        });
+
+        const userToReturn = {...user._doc};
+        delete userToReturn.password;
+
+        return res.json({
+            token: token,
+            user: userToReturn,
+        });
+
     } catch(err) {
         console.log(err);
         return res.status(500).send(err.message);
